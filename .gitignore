@@ -1,0 +1,18 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Terraform outputs
+terraform_outputs/
+
+# IDE
+.vscode/
+.idea/
