@@ -1,15 +1,15 @@
-from langchain.agents import create_agent
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="langchain_core")
+
 from fastapi import FastAPI, HTTPException
-from langchain.messages import SystemMessage, HumanMessage
-# from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from typing import Any
-from langchain.tools import tool
 import json
 import re
 import os
+
 
 app = FastAPI(title = "Infrascribe Agent")
 load_dotenv()
@@ -53,9 +53,13 @@ class ProjectResponse(BaseModel):
     summary: str
     terraform: str
     estimated_cost: str
+    alternatives: str
+
 
 system_prompt = """
-    You are an expert AWS Cloud Architect and Terraform engineer. that will consult with a user on what Infrastructure is needed to run their project and the total cost of their infrastructure.
+    You are an expert AWS Cloud Architect and Terraform engineer. You will consult with a user on what Infrastructure is needed to run their project and the total cost of their infrastructure and 
+    offer better alternatives.
+
     Answer the user query and use necessary tools.
 
     When given a project description, you will:
@@ -68,6 +72,7 @@ system_prompt = """
         "summary": "brief summary of the infrastructure",
         "terraform": "the complete terraform HCL code with \\n for newlines",
         "estimated_cost": "estimated monthly cost"
+        "alternatives": "suggest better alternatives"
     }
 
     Terraform requirements:

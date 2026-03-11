@@ -1,4 +1,7 @@
-langchain 
-langchain-community 
-langchain-openai
-langchain-anthropic
+fastapi==0.135.1
+uvicorn==0.41.0
+langchain==1.2.10
+langchain-core==1.2.18
+langchain-groq==1.1.2
+pydantic==2.12.5
+python-dotenv==1.2.2
