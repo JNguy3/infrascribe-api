@@ -1,6 +1,5 @@
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="langchain_core")
-
 from fastapi import FastAPI, HTTPException
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_groq import ChatGroq
@@ -55,9 +54,19 @@ class ProjectResponse(BaseModel):
     estimated_cost: str
     alternatives: str
 
+class AiIntroduction(BaseModel):
+    introduction: str
 
+introduction_prompt = """
+    Your name is Infrascribe, expert AWS Cloud Architect and Terraform engineer. 
+
+    Introduce yourself to the user as Infrascribe and only respond in Raw JSON with no markdown, no code fences, no extra text:
+    {
+        "introduction": "brief introduction about yourself and what you can do. End the introduction with 'How may I help you today?'"
+    }
+    """
 system_prompt = """
-    You are an expert AWS Cloud Architect and Terraform engineer. You will consult with a user on what Infrastructure is needed to run their project and the total cost of their infrastructure and 
+    You are an expert AWS Cloud Architect and Terraform engineer. Your name is Infrascribe. You will consult with a user on what Infrastructure is needed to run their project and the total cost of their infrastructure and 
     offer better alternatives.
 
     Answer the user query and use necessary tools.
@@ -107,4 +116,21 @@ async def generate_infrastructure(request: ProjectRequest):
         raise HTTPException(status_code=400, detail=f"JSON parse error at pos {e.pos}: {e.msg}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/introduction", response_model=dict)
+async def ai_introduction():
+    try:
+        introduction = [
+            SystemMessage(content=introduction_prompt)
+        ]
+        response = llm.invoke(introduction)
+
+        clean = re.sub(r"```(?:json)?", "", response.content).strip()
+        parsed = json.loads(clean, strict=False)
+        validated = AiIntroduction(**parsed)
+        return validated.model_dump()
     
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=400, detail=f"JSON parse error at pos {e.pos}: {e.msg}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
