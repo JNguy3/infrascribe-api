@@ -27,36 +27,6 @@ app.add_middleware(
 load_dotenv()
 
 llm = ChatGroq(model = "llama-3.3-70b-versatile")
-# class ConfigurableField(BaseModel):
-#     key: str
-#     label: str
-#     value: Any  # could be str, int, bool, list
-#     input_type: str  # "text", "select", "number", "toggle"
-#     options: list[Any] = []  # empty if not a select
-
-# class Component(BaseModel):
-#     id: str
-#     name: str
-#     type: str  # e.g. "aws_instance", "aws_db_instance"
-#     description: str
-#     configurable_fields: list[ConfigurableField]
-
-# class CostBreakdown(BaseModel):
-#     component_id: str
-#     name: str
-#     monthly: float
-
-# class Cost(BaseModel):
-#     total_monthly: float
-#     breakdown: list[CostBreakdown]
-#     notes: str
-
-# class InfrastructureResponse(BaseModel):
-#     summary: str
-#     chat_message: str
-#     components: list[Component]  # dynamic — Claude decides how many and what type
-#     terraform: str
-#     cost: Cost
 
 class ProjectRequest(BaseModel):
     description: str
